@@ -25,13 +25,15 @@ $server->on('Close', function (\Swoole\WebSocket\Server $server, $fd) {
 });
 
 $server->on('Request', function (\Swoole\Http\Request $request, \Swoole\Http\Response $response) use ($server) {
-    foreach ($server->connections as $fd)
-    {
-        if ($server->isEstablished($fd)) {
-            $server->push($fd, $request->get['message']);
+    if ($request->server['request_uri'] == '/message') {
+        foreach ($server->connections as $fd)
+        {
+            if ($server->isEstablished($fd)) {
+                $server->push($fd, $request->get['message']);
+            }
         }
+        $response->end('ok');
     }
-    $response->end('ok');
 });
 
 $server->start();
